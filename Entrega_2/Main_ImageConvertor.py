@@ -4,12 +4,33 @@ from tkinter import filedialog
 from tkinter import messagebox
 from PIL import Image
 from PIL import ImageTk
+import matplotlib.image as img
 import numpy as np
 import cv2
 import imutils
 import os
 
+def compression_Algorithm(m):
 
+    mg = img.imread(m)
+
+    w, h = mg.shape[:2]
+
+    xNew = int(w * 1 / 2)
+    yNew = int(h * 1 / 2)
+
+    xScale = xNew/(w-1)
+    yScale = yNew/(h-1)
+
+    imgData = np.zeros([xNew, yNew, 4])
+
+    for i in range(xNew-1):
+        for j in range(yNew-1):
+            imgData[i + 1, j + 1]= mg[1 + int(i / xScale),
+                                     1 + int(j / yScale)]
+
+    img.imsave('TempImg.jpg', imgData)
+    
 #Mostrar output de la imagen dependiendo de la seleccion del usuario
 def deteccion_Output():
     
@@ -78,6 +99,7 @@ def elegir_Directorio():
 
     #Usuario elige mediante filedialog el directorio a comprimir
     directorio = filedialog.askdirectory()
+    pathdir = directorio
     files_names = os.listdir(directorio)
     print(files_names)
 
@@ -116,13 +138,37 @@ def elegir_Directorio():
              #No usara archivos que sean distintos a imagenes v2
                 print(files_name) #imprime el path
                 carpetaPath = directorio + "/" + files_name
-
                 image = cv2.imread(carpetaPath) #lee las imagenes de la carpeta 
+                #print(pathData)
                 
                 #No usara archivos que sean distintos a imagenes v1
                 if image is None:
                     continue
                 
+                """
+                mg = img.imread(files_name)
+
+                w, h = mg.shape[:2]
+
+                xNew = int(w * 1 / 2)
+                yNew = int(h * 1 / 2)
+
+                xScale = xNew/(w-1)
+                yScale = yNew/(h-1)
+
+                imgData = np.zeros([xNew, yNew, 4])
+
+                for i in range(xNew-1):
+                    for j in range(yNew-1):
+                        imgData[i + 1, j + 1]= mg[1 + int(i / xScale),
+                                                1 + int(j / yScale)]
+
+                img.imsave('TempImg.jpg', imgData)
+
+                #Compresion con algoritmo
+                #compression_Algorithm(str(carpetaPath))
+
+                """
                 #Compresion de cada variable
                 Near_img = cv2.resize(image,None, fx= 2, fy= 2, interpolation = cv2.INTER_NEAREST)
                 bilinear_img = cv2.resize(image,None, fx = 2, fy = 2, interpolation = cv2.INTER_LINEAR)
@@ -133,6 +179,8 @@ def elegir_Directorio():
                 cv2.imwrite(Compress_Path+"/Bilinear/image_Bilinear"+ str(count) + ".jpg", bilinear_img)
                 cv2.imwrite(Compress_Path+"/bicubico/image_Bicubico"+ str(count) + ".jpg", bicubic_img)
                 count+=1
+                
+                
         messagebox.showinfo("Informacion General", "Todas las imagenes se han comprimido con Exito")
         messagebox.showinfo("Informacion General", "Las imagenes se encuentran en la carpeta donde esta ubicado el programa ")
     else: #Si no se encuentran archivos en la carpeta saldra una advertencia al usuario
@@ -179,5 +227,5 @@ btnVisualizarDirec = Button(root, text="Choose a Directory", width=25, command= 
 btnVisualizarDirec.grid(column=1, row=0, padx= 5, pady= 5)
 
 
-root.iconbitmap("./Icono-NO-ELIMINAR.ico")
+#root.iconbitmap("./Icono-NO-ELIMINAR.ico")
 root.mainloop()
