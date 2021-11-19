@@ -65,6 +65,9 @@ def desscompression(compressed_csv):
 
     pass
 
+def write_compressed():
+    pass
+
 #iniciar contador del programa con timerit
 start = default_timer()
 def main():
